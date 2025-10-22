@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MegaherzCampus PWA</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    /* ===== Global Page Background ===== */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('images/background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      text-align: center;
+      color: #000;
+    }
+
+    header {
+      background: rgba(0,120,215,0.85);
+      color: white;
+      padding: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .page { 
+      display: none; 
+      padding: 20px; 
+      min-height: calc(100vh - 70px); /* leave space for header */
+      background: rgba(255,255,255,0.7); /* semi-transparent overlay */
+      border-radius: 15px;
+      margin: 10px auto;
+      max-width: 600px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .active { display: block; }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      background: #0078d7;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: transform 0.2s;
+    }
+    button:hover { transform: scale(1.05); }
+
+    /* ===== Game Area ===== */
+    #game-area {
+      position: relative;
+      width: 90%;
+      height: 250px;
+      margin: 20px auto;
+      background: rgba(223, 240, 216, 0.85); /* semi-transparent */
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    #character {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 50px;
+      height: 50px;
+      background: red;
+      border-radius: 50%;
+      transition: left 1.2s cubic-bezier(0.4,0,0.2,1), bottom 0.3s;
+    }
+
+    .checkpoint {
+      position: absolute;
+      bottom: 0;
+      width: 50px;
+      height: 50px;
+      background: gold;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 50px;
+      font-weight: bold;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    }
+
+    #A { left: 15%; }
+    #B { left: 35%; }
+    #C { left: 55%; }
+    #D { left: 75%; }
+
+    #coinDisplay {
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    /* PDF list style */
+    #pdfList a {
+      display: block;
+      margin: 5px 0;
+      color: #0078d7;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>🏠 MegaherzCampus PWA</header>
+
+  <!-- HOME PAGE -->
+  <div id="home" class="page active">
+    <h2>Welcome to MegaherzCampus!</h2>
+    <p>Choose an activity:</p>
+    <button onclick="showPage('documents')">📄 Download Documents</button>
+    <button onclick="showPage('game')">🎮 Play Game</button>
+  </div>
+
+  <!-- DOCUMENTS PAGE -->
+  <div id="documents" class="page">
+    <h2>📄 Downloadable Documents</h2>
+    <ul id="pdfList"></ul>
+    <button onclick="showPage('home')">⬅️ Back</button>
+  </div>
+
+  <!-- GAME PAGE -->
+  <div id="game" class="page">
+    <h2>🎮 MegaherzCampus Game</h2>
+    <div id="coinDisplay">Coins: 0</div>
+    <div id="game-area">
+      <div id="character"></div>
+      <div id="A" class="checkpoint">A</div>
+      <div id="B" class="checkpoint">B</div>
+      <div id="C" class="checkpoint">C</div>
+      <div id="D" class="checkpoint">D</div>
+    </div>
+    <button onclick="startGame()">Start Game</button>
+    <button onclick="showPage('home')">⬅️ Back</button>
+  </div>
+
+  <script>
+    // ===== PAGE NAVIGATION =====
+    function showPage(id){
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // ===== PDF DOWNLOAD =====
+    const pdfs = [
+      { name: "Sample Document 1", url: "docs/sample1.pdf" },
+      { name: "Sample Document 2", url: "docs/sample2.pdf" }
+    ];
+
+    function renderPDFs() {
+      const list = document.getElementById('pdfList');
+      list.innerHTML = '';
+      pdfs.forEach(p => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.textContent = p.name;
+        a.href = p.url;
+        a.download = p.name;
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+    }
+    renderPDFs();
+
+    // ===== GAME LOGIC =====
+    let coinCount = 0;
+    const coinDisplay = document.getElementById('coinDisplay');
+    const character = document.getElementById('character');
+    const checkpoints = ['A','B','C','D'];
+
+    function generateQuestion() {
+      const num1 = Math.floor(Math.random()*10)+1;
+      const num2 = Math.floor(Math.random()*10)+1;
+      const isAdd = Math.random() > 0.5;
+      const question = isAdd ? `${num1} + ${num2} = ?` : `${Math.max(num1,num2)} - ${Math.min(num1,num2)} = ?`;
+      const answer = isAdd ? (num1+num2).toString() : (Math.max(num1,num2)-Math.min(num1,num2)).toString();
+      return {q:question, a:answer};
+    }
+
+    function startGame() {
+      coinCount = 0;
+      coinDisplay.textContent = 'Coins: 0';
+      character.style.left = '0';
+      moveToCheckpoint(0);
+    }
+
+    function moveToCheckpoint(index){
+      if(index >= checkpoints.length){
+        setTimeout(()=>alert(`🎉 Game over! You collected ${coinCount} coins.`),500);
+        return;
+      }
+      const cp = checkpoints[index];
+      const elem = document.getElementById(cp);
+      const left = elem.offsetLeft;
+      character.style.left = left+'px';
+
+      setTimeout(()=>{
+        const {q,a} = generateQuestion();
+        const answer = prompt(q);
+        if(answer === a){
+          coinCount++;
+          coinDisplay.textContent = `Coins: ${coinCount}`;
+          alert('✅ Correct! +1 coin');
+        } else {
+          alert(`❌ Wrong! Answer was ${a}`);
+        }
+        moveToCheckpoint(index+1);
+      },1300);
+    }
+
+    // ===== PWA SERVICE WORKER =====
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
