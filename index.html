@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MegaherzCampus PWA TEST</title>
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="manifest.json?v=1" />
   <style>
     body {
       font-family: 'Comic Sans MS', cursive, sans-serif;
       margin: 0;
       padding: 0;
-      background: url('images/background.jpg') no-repeat center center fixed;
+      background: url('images/background.jpg?v=1') no-repeat center center fixed;
       background-size: cover;
       text-align: center;
       color: #000;
@@ -25,17 +25,7 @@
       text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
     }
 
-    .page {
-      display: none;
-      padding: 20px;
-      min-height: calc(100vh - 70px);
-      background: rgba(255,255,255,0.7);
-      border-radius: 20px;
-      margin: 15px auto;
-      max-width: 700px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    }
-
+    .page { display: none; padding: 20px; min-height: calc(100vh - 70px); background: rgba(255,255,255,0.7); border-radius: 20px; margin: 15px auto; max-width: 700px; box-shadow: 0 0 15px rgba(0,0,0,0.2); }
     .active { display: block; }
 
     button {
@@ -51,11 +41,7 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.2);
       transition: transform 0.2s, background 0.3s;
     }
-
-    button:hover { 
-      transform: scale(1.05);
-      background: #ffc933;
-    }
+    button:hover { transform: scale(1.05); background: #ffc933; }
 
     #game-area {
       position: relative;
@@ -63,7 +49,7 @@
       max-width: 700px;
       aspect-ratio: 2 / 1;
       margin: 20px auto;
-      background: rgba(223, 240, 216, 0.85) url('images/treasure-map.png') center/cover;
+      background: rgba(223, 240, 216, 0.85) url('images/treasure-map.png?v=1') center/cover;
       border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -73,7 +59,7 @@
       position: absolute;
       width: 9%;
       aspect-ratio: 1 / 1;
-      background: url('images/character.png') no-repeat center/contain;
+      background: url('images/character.png?v=1') no-repeat center/contain;
       transition: left 1.5s ease-in-out, top 1.5s ease-in-out;
     }
 
@@ -90,19 +76,14 @@
       box-shadow: 0 0 8px rgba(0,0,0,0.3);
     }
 
-    /* Dynamically positioned checkpoints (aligned to your uploaded map path) */
-    #A { top: 68%; left: 5%; }   /* near the bottle bottom left */
-    #B { top: 55%; left: 23%; }  /* near the octopus */
-    #C { top: 27%; left: 45%; }  /* near the palm island */
-    #D { top: 35%; left: 65%; }  /* near the shark/volcano */
-    #E { top: 70%; left: 80%; }  /* near the treasure */
-    #F { top: 38%; left: 90%; }  /* near the parrot side */
+    #A { top: 68%; left: 5%; }   
+    #B { top: 55%; left: 23%; }  
+    #C { top: 27%; left: 45%; }  
+    #D { top: 35%; left: 65%; }  
+    #E { top: 70%; left: 80%; }  
+    #F { top: 38%; left: 90%; }  
 
-    #goldDisplay {
-      font-size: 1.4rem;
-      margin-top: 10px;
-      font-weight: bold;
-    }
+    #goldDisplay { font-size: 1.4rem; margin-top: 10px; font-weight: bold; }
 
     #questionBox {
       display: none;
@@ -119,42 +100,17 @@
       text-align: center;
       z-index: 100;
     }
+    #questionBox h3 { font-size: 1.6rem; margin-bottom: 20px; }
+    #questionBox input { font-size: 1.3rem; padding: 10px; width: 60%; border-radius: 8px; border: 2px solid #0078d7; text-align: center; }
 
-    #questionBox h3 {
-      font-size: 1.6rem;
-      margin-bottom: 20px;
-    }
+    #overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 90; }
 
-    #questionBox input {
-      font-size: 1.3rem;
-      padding: 10px;
-      width: 60%;
-      border-radius: 8px;
-      border: 2px solid #0078d7;
-      text-align: center;
-    }
-
-    #overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 90;
-    }
-
-    #pdfList a {
-      display: block;
-      margin: 5px 0;
-      color: #0078d7;
-      text-decoration: underline;
-    }
+    #pdfList a { display: block; margin: 5px 0; color: #0078d7; text-decoration: underline; }
   </style>
 </head>
 <body>
   <header>🏴‍☠️ MegaherzCampus Treasure Hunt</header>
 
-  <!-- HOME PAGE -->
   <div id="home" class="page active">
     <h2>Welcome to MegaherzCampus!</h2>
     <p>Choose an activity:</p>
@@ -162,14 +118,12 @@
     <button onclick="showPage('game')">🏝️ Play Treasure Hunt</button>
   </div>
 
-  <!-- DOCUMENTS PAGE -->
   <div id="documents" class="page">
     <h2>📄 Downloadable Documents</h2>
     <ul id="pdfList"></ul>
     <button onclick="showPage('home')">⬅️ Back</button>
   </div>
 
-  <!-- GAME PAGE -->
   <div id="game" class="page">
     <h2>🏝️ MegaherzCampus Treasure Hunt</h2>
     <div id="goldDisplay">💰 Gold: 0</div>
@@ -186,7 +140,6 @@
     <button onclick="showPage('home')">⬅️ Back</button>
   </div>
 
-  <!-- QUESTION POPUP -->
   <div id="overlay"></div>
   <div id="questionBox">
     <h3 id="questionText">Question</h3>
@@ -196,128 +149,119 @@
   </div>
 
   <script>
-  // ===== PAGE NAVIGATION =====
-  function showPage(id){
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
-
-  // ===== PDF DOWNLOAD =====
-  const pdfs = [
-    { name: "Sample Document 1", url: "docs/sample1.pdf" },
-    { name: "Sample Document 2", url: "docs/sample2.pdf" }
-  ];
-
-  function renderPDFs() {
-    const list = document.getElementById('pdfList');
-    list.innerHTML = '';
-    pdfs.forEach(p => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.textContent = p.name;
-      a.href = p.url;
-      a.download = p.name;
-      li.appendChild(a);
-      list.appendChild(li);
-    });
-  }
-  renderPDFs();
-
-  // ===== GAME LOGIC =====
-  let goldCount = 0;
-  const goldDisplay = document.getElementById('goldDisplay');
-  const character = document.getElementById('character');
-  const checkpoints = ['A','B','C','D','E','F'];
-  let currentIndex = 0;
-  let correctAnswer = '';
-
-  function generateQuestion() {
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-    const isAdd = Math.random() > 0.5;
-    const question = isAdd ? `${num1} + ${num2} = ?` : `${Math.max(num1,num2)} - ${Math.min(num1,num2)} = ?`;
-    correctAnswer = isAdd ? (num1+num2).toString() : (Math.max(num1,num2)-Math.min(num1,num2)).toString();
-    document.getElementById('questionText').textContent = question;
-    const input = document.getElementById('answerInput');
-    input.value = '';
-    input.style.backgroundColor = 'white';
-  }
-
-  function showQuestion() {
-    generateQuestion();
-    document.getElementById('overlay').style.display = 'block';
-    document.getElementById('questionBox').style.display = 'block';
-  }
-
-  function hideQuestion() {
-    document.getElementById('overlay').style.display = 'none';
-    document.getElementById('questionBox').style.display = 'none';
-  }
-
-  function addGoldAnimation() {
-    const goldIcon = document.createElement('div');
-    goldIcon.textContent = '💰';
-    goldIcon.style.position = 'absolute';
-    goldIcon.style.top = '50%';
-    goldIcon.style.left = '50%';
-    goldIcon.style.transform = 'translate(-50%, -50%) scale(1)';
-    goldIcon.style.fontSize = '2rem';
-    goldIcon.style.opacity = '1';
-    goldIcon.style.transition = 'transform 0.8s ease-out, opacity 0.8s ease-out';
-    document.body.appendChild(goldIcon);
-
-    setTimeout(() => {
-      goldIcon.style.transform = 'translate(-50%, -200%) scale(0.5)';
-      goldIcon.style.opacity = '0';
-    }, 100);
-
-    setTimeout(() => goldIcon.remove(), 900);
-  }
-
-  function submitAnswer() {
-    const input = document.getElementById('answerInput');
-    const answer = input.value.trim();
-
-    if (answer === correctAnswer) {
-      input.style.backgroundColor = '#b4f8b4';
-      goldCount++;
-      goldDisplay.textContent = `💰 Gold: ${goldCount}`;
-      addGoldAnimation();
-    } else {
-      input.style.backgroundColor = '#ffb3b3';
+    // ===== PAGE NAVIGATION =====
+    function showPage(id){
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
     }
 
-    setTimeout(() => {
-      hideQuestion();
-      moveToCheckpoint(currentIndex + 1);
-    }, 1000);
-  }
+    // ===== PDF DOWNLOAD =====
+    const pdfs = [
+      { name: "Sample Document 1", url: "docs/sample1.pdf?v=1" },
+      { name: "Sample Document 2", url: "docs/sample2.pdf?v=1" }
+    ];
 
-  function startGame() {
-    goldCount = 0;
-    currentIndex = 0;
-    goldDisplay.textContent = '💰 Gold: 0';
-    character.style.left = '0%';
-    character.style.top = '70%';
-    moveToCheckpoint(0);
-  }
-
-  function moveToCheckpoint(index){
-    if(index >= checkpoints.length){
-      setTimeout(()=>alert(`🏆 Game over! You collected ${goldCount} gold!`),500);
-      return;
+    function renderPDFs() {
+      const list = document.getElementById('pdfList');
+      list.innerHTML = '';
+      pdfs.forEach(p => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.textContent = p.name;
+        a.href = p.url;
+        a.download = p.name;
+        li.appendChild(a);
+        list.appendChild(li);
+      });
     }
-    currentIndex = index;
-    const cp = document.getElementById(checkpoints[index]);
-    character.style.left = cp.offsetLeft + 'px';
-    character.style.top = cp.offsetTop + 'px';
-    setTimeout(showQuestion, 1300);
-  }
+    renderPDFs();
 
-  // ===== PWA SERVICE WORKER =====
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js');
-  }
+    // ===== GAME LOGIC =====
+    let goldCount = 0;
+    const goldDisplay = document.getElementById('goldDisplay');
+    const character = document.getElementById('character');
+    const checkpoints = ['A','B','C','D','E','F'];
+    let currentIndex = 0;
+    let correctAnswer = '';
+
+    function generateQuestion() {
+      const num1 = Math.floor(Math.random() * 10) + 1;
+      const num2 = Math.floor(Math.random() * 10) + 1;
+      const isAdd = Math.random() > 0.5;
+      const question = isAdd ? `${num1} + ${num2} = ?` : `${Math.max(num1,num2)} - ${Math.min(num1,num2)} = ?`;
+      correctAnswer = isAdd ? (num1+num2).toString() : (Math.max(num1,num2)-Math.min(num1,num2)).toString();
+      document.getElementById('questionText').textContent = question;
+      const input = document.getElementById('answerInput');
+      input.value = '';
+      input.style.backgroundColor = 'white';
+    }
+
+    function showQuestion() { generateQuestion(); document.getElementById('overlay').style.display = 'block'; document.getElementById('questionBox').style.display = 'block'; }
+    function hideQuestion() { document.getElementById('overlay').style.display = 'none'; document.getElementById('questionBox').style.display = 'none'; }
+
+    function addGoldAnimation() {
+      const goldIcon = document.createElement('div');
+      goldIcon.textContent = '💰';
+      goldIcon.style.position = 'absolute';
+      goldIcon.style.top = '50%';
+      goldIcon.style.left = '50%';
+      goldIcon.style.transform = 'translate(-50%, -50%) scale(1)';
+      goldIcon.style.fontSize = '2rem';
+      goldIcon.style.opacity = '1';
+      goldIcon.style.transition = 'transform 0.8s ease-out, opacity 0.8s ease-out';
+      document.body.appendChild(goldIcon);
+
+      setTimeout(() => { goldIcon.style.transform = 'translate(-50%, -200%) scale(0.5)'; goldIcon.style.opacity = '0'; }, 100);
+      setTimeout(() => goldIcon.remove(), 900);
+    }
+
+    function submitAnswer() {
+      const input = document.getElementById('answerInput');
+      const answer = input.value.trim();
+      if (answer === correctAnswer) {
+        input.style.backgroundColor = '#b4f8b4';
+        goldCount++;
+        goldDisplay.textContent = `💰 Gold: ${goldCount}`;
+        addGoldAnimation();
+      } else { input.style.backgroundColor = '#ffb3b3'; }
+
+      setTimeout(() => { hideQuestion(); moveToCheckpoint(currentIndex + 1); }, 1000);
+    }
+
+    function startGame() {
+      goldCount = 0; currentIndex = 0;
+      goldDisplay.textContent = '💰 Gold: 0';
+      character.style.left = '0%';
+      character.style.top = '70%';
+      moveToCheckpoint(0);
+    }
+
+    function moveToCheckpoint(index){
+      if(index >= checkpoints.length){
+        setTimeout(()=>alert(`🏆 Game over! You collected ${goldCount} gold!`),500);
+        return;
+      }
+      currentIndex = index;
+      const cp = document.getElementById(checkpoints[index]);
+      character.style.left = cp.offsetLeft + 'px';
+      character.style.top = cp.offsetTop + 'px';
+      setTimeout(showQuestion, 1300);
+    }
+
+    // ===== PRELOAD IMAGES =====
+    const imagesToLoad = [
+      'images/background.jpg?v=1',
+      'images/treasure-map.png?v=1',
+      'images/character.png?v=1'
+    ];
+    imagesToLoad.forEach(src => { const img = new Image(); img.src = src; });
+
+    // ===== SERVICE WORKER =====
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('sw.js?v=1').then(reg=>{
+        console.log('Service Worker registered with cache-busting.');
+      });
+    }
   </script>
 </body>
 </html>
