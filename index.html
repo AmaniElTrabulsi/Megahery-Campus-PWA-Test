@@ -176,5 +176,34 @@ function nextMathQuestion(){
   });
 }
 </script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    // Check for updates periodically
+    setInterval(() => {
+      reg.update();
+    }, 1000*60*5); // every 5 minutes
+  });
+
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    // A new SW has taken control
+    const updateMsg = document.createElement('div');
+    updateMsg.textContent = '🔔 Update verfügbar! Bitte neu laden.';
+    updateMsg.style.position = 'fixed';
+    updateMsg.style.bottom = '20px';
+    updateMsg.style.left = '50%';
+    updateMsg.style.transform = 'translateX(-50%)';
+    updateMsg.style.background = '#ffcb05';
+    updateMsg.style.color = '#000';
+    updateMsg.style.padding = '12px 20px';
+    updateMsg.style.borderRadius = '15px';
+    updateMsg.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
+    updateMsg.style.cursor = 'pointer';
+    updateMsg.onclick = ()=>location.reload();
+    document.body.appendChild(updateMsg);
+  });
+}
+</script>
+
 </body>
 </html>
