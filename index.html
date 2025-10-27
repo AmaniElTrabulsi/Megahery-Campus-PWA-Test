@@ -27,14 +27,15 @@ button:hover { transform: scale(1.1); background:#ffd633; }
 #mapGame,#mathGame { display:none; }
 
 /* Map Game */
-#mapContainer { position:relative; background:url('images/map-bg.png') center/cover no-repeat; width:100%; max-width:600px; height:400px; margin:20px auto; border-radius:20px; overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.3); }
-.checkpoint { position:absolute; width:45px; height:45px; background:#aaa; border-radius:50%; color:white; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:2; transition: background 0.3s; box-shadow:0 0 8px rgba(0,0,0,0.4); }
-#character { position:absolute; width:50px; height:50px; background:url('images/character.png') center/contain no-repeat; z-index:3; transition: all 0.7s ease; }
+#mapContainer { position:relative; background:url('images/map-bg.png') center/contain no-repeat; width:100%; max-width:600px; height:400px; margin:20px auto; border-radius:20px; overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.3); }
+.checkpoint { position:absolute; width:40px; height:40px; background:#aaa; border-radius:50%; color:white; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:2; transition: background 0.3s; box-shadow:0 0 8px rgba(0,0,0,0.4); }
+#character { position:absolute; width:40px; height:40px; background:url('images/character.png') center/contain no-repeat; z-index:3; transition: all 0.7s ease; }
 #questionText { font-size:1.2em; font-weight:bold; margin:10px 0; color:#0066cc; }
 #mapOptions input { padding:8px; font-size:1.1em; width:100px; margin-right:5px; border-radius:8px; border:1px solid #ccc; }
 #mapOptions button { padding:8px 12px; font-size:1em; }
 
 /* Math Quest Game */
+#mathGame { background:url('images/background.jpg') center/cover no-repeat; padding-bottom:20px; }
 #mathContainer { margin-top:30px; }
 #mathQuestion { font-size:1.5em; margin-bottom:15px; color:#ff6f61; }
 #mathOptions .option { width:220px; background:#ddd; color:#333; margin:8px auto; border-radius:12px; padding:12px; cursor:pointer; box-shadow:0 0 6px rgba(0,0,0,0.3); font-size:1.2em; transition:0.2s; }
@@ -59,21 +60,23 @@ button:hover { transform: scale(1.1); background:#ffd633; }
 <button id="startMap">Karten-Abenteuer starten</button>
 <button id="startMath">Mathe-Quest starten</button>
 
+<!-- Map Game -->
 <div id="mapGame">
   <div id="mapContainer">
     <div id="character"></div>
-    <div class="checkpoint" id="A" style="top:50px; left:50px;">A</div>
-    <div class="checkpoint" id="B" style="top:100px; left:200px;">B</div>
-    <div class="checkpoint" id="C" style="top:180px; left:350px;">C</div>
-    <div class="checkpoint" id="D" style="top:260px; left:250px;">D</div>
-    <div class="checkpoint" id="E" style="top:320px; left:150px;">E</div>
-    <div class="checkpoint" id="F" style="top:360px; left:300px;">F</div>
+    <div class="checkpoint" id="A" style="top:15%; left:10%;">A</div>
+    <div class="checkpoint" id="B" style="top:25%; left:40%;">B</div>
+    <div class="checkpoint" id="C" style="top:40%; left:65%;">C</div>
+    <div class="checkpoint" id="D" style="top:55%; left:55%;">D</div>
+    <div class="checkpoint" id="E" style="top:70%; left:30%;">E</div>
+    <div class="checkpoint" id="F" style="top:80%; left:60%;">F</div>
   </div>
   <p id="questionText"></p>
   <div id="mapOptions"></div>
   <button id="backHome1">Zurück</button>
 </div>
 
+<!-- Math Quest Game -->
 <div id="mathGame">
   <div id="mathContainer">
     <h2 id="mathQuestion">Frage</h2>
@@ -87,7 +90,11 @@ button:hover { transform: scale(1.1); background:#ffd633; }
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
 let totalGold=0, totalStars=0;
-const homeBtns={startMap:document.getElementById('startMap'),startMath:document.getElementById('startMath'),mapGame:document.getElementById('mapGame'),mathGame:document.getElementById('mathGame'),backHome1:document.getElementById('backHome1'),backHome2:document.getElementById('backHome2')};
+
+const homeBtns={startMap:document.getElementById('startMap'), startMath:document.getElementById('startMath'),
+mapGame:document.getElementById('mapGame'), mathGame:document.getElementById('mathGame'),
+backHome1:document.getElementById('backHome1'), backHome2:document.getElementById('backHome2')};
+
 const pdfContainer=document.getElementById('pdfContainer');
 const goldCount=document.getElementById('goldCount');
 const starCount=document.getElementById('starCount');
