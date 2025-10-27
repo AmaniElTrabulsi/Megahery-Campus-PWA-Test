@@ -1,267 +1,173 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MegaherzCampus PWA TEST</title>
-  <link rel="manifest" href="manifest.json?v=1" />
-  <style>
-    body {
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: url('images/background.jpg?v=1') no-repeat center center fixed;
-      background-size: cover;
-      text-align: center;
-      color: #000;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Megaherz Campus</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Comic Neue', sans-serif; margin:0; padding:0; text-align:center; background:url('images/background.jpg') center/cover no-repeat fixed; color:#333; transition: background 0.5s; }
+h1 { margin-top:20px; font-size:2em; color:#ff6f61; text-shadow:2px 2px #fff; }
+button { background:#ffcb05; border:none; border-radius:15px; padding:12px 25px; margin:10px; font-size:1.3em; cursor:pointer; transition: transform 0.2s, background 0.2s; }
+button:hover { transform: scale(1.1); background:#ffd633; }
 
-    header {
-      background: rgba(0,120,215,0.85);
-      color: white;
-      padding: 1rem;
-      font-size: 1.4rem;
-      font-weight: bold;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    }
+/* Scoreboard */
+#scoreboard { margin: 10px auto; display:flex; justify-content:center; gap:20px; font-size:1.2em; font-weight:bold; color:#0066cc; }
+#scoreboard span { background:#fff3e0; border:2px solid #ffcb05; padding:5px 10px; border-radius:10px; }
 
-    .page { display: none; padding: 20px; min-height: calc(100vh - 70px); background: rgba(255,255,255,0.7); border-radius: 20px; margin: 15px auto; max-width: 700px; box-shadow: 0 0 15px rgba(0,0,0,0.2); }
-    .active { display: block; }
+/* PDF Documents */
+#pdfContainer { display: flex; flex-wrap: wrap; justify-content: center; margin: 15px 0; }
+.pdfCard { background: #fff3e0; border: 2px solid #ffcb05; border-radius: 15px; width: 120px; height: 150px; margin: 10px; display:flex; flex-direction: column; align-items: center; justify-content: center; cursor:pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s; }
+.pdfCard:hover { transform: scale(1.1); box-shadow:0 6px 15px rgba(0,0,0,0.3); }
+.pdfIcon { font-size: 40px; margin-bottom: 10px; }
+.pdfTitle { font-weight:bold; font-size:1em; text-align:center; color:#333; }
 
-    button {
-      padding: 15px 25px;
-      margin: 10px;
-      border: none;
-      background: #ffb400;
-      color: white;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 1.2rem;
-      font-weight: bold;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      transition: transform 0.2s, background 0.3s;
-    }
-    button:hover { transform: scale(1.05); background: #ffc933; }
+/* Game screens */
+#mapGame,#mathGame { display:none; }
 
-    #game-area {
-      position: relative;
-      width: 95%;
-      max-width: 700px;
-      aspect-ratio: 2 / 1;
-      margin: 20px auto;
-      background: rgba(223, 240, 216, 0.85) url('images/treasure-map.png?v=1') center/cover;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    }
+/* Map Game */
+#mapContainer { position:relative; background:url('images/map-bg.png') center/cover no-repeat; width:100%; max-width:600px; height:400px; margin:20px auto; border-radius:20px; overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.3); }
+.checkpoint { position:absolute; width:45px; height:45px; background:#aaa; border-radius:50%; color:white; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:2; transition: background 0.3s; box-shadow:0 0 8px rgba(0,0,0,0.4); }
+#character { position:absolute; width:50px; height:50px; background:url('images/character.png') center/contain no-repeat; z-index:3; transition: all 0.7s ease; }
+#questionText { font-size:1.2em; font-weight:bold; margin:10px 0; color:#0066cc; }
+#mapOptions input { padding:8px; font-size:1.1em; width:100px; margin-right:5px; border-radius:8px; border:1px solid #ccc; }
+#mapOptions button { padding:8px 12px; font-size:1em; }
 
-    #character {
-      position: absolute;
-      width: 9%;
-      aspect-ratio: 1 / 1;
-      background: url('images/character.png?v=1') no-repeat center/contain;
-      transition: left 1.5s ease-in-out, top 1.5s ease-in-out;
-    }
-
-    .checkpoint {
-      position: absolute;
-      width: 9%;
-      aspect-ratio: 1 / 1;
-      background: gold;
-      border-radius: 50%;
-      text-align: center;
-      font-weight: bold;
-      color: #000;
-      line-height: 180%;
-      box-shadow: 0 0 8px rgba(0,0,0,0.3);
-    }
-
-    #A { top: 68%; left: 5%; }   
-    #B { top: 55%; left: 23%; }  
-    #C { top: 27%; left: 45%; }  
-    #D { top: 35%; left: 65%; }  
-    #E { top: 70%; left: 80%; }  
-    #F { top: 38%; left: 90%; }  
-
-    #goldDisplay { font-size: 1.4rem; margin-top: 10px; font-weight: bold; }
-
-    #questionBox {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
-      width: 80%;
-      max-width: 400px;
-      text-align: center;
-      z-index: 100;
-    }
-    #questionBox h3 { font-size: 1.6rem; margin-bottom: 20px; }
-    #questionBox input { font-size: 1.3rem; padding: 10px; width: 60%; border-radius: 8px; border: 2px solid #0078d7; text-align: center; }
-
-    #overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 90; }
-
-    #pdfList a { display: block; margin: 5px 0; color: #0078d7; text-decoration: underline; }
-  </style>
+/* Math Quest Game */
+#mathContainer { margin-top:30px; }
+#mathQuestion { font-size:1.5em; margin-bottom:15px; color:#ff6f61; }
+#mathOptions .option { width:220px; background:#ddd; color:#333; margin:8px auto; border-radius:12px; padding:12px; cursor:pointer; box-shadow:0 0 6px rgba(0,0,0,0.3); font-size:1.2em; transition:0.2s; }
+#mathOptions .option:hover { opacity:0.8; }
+#mathScore { font-size:1.3em; color:#ffcb05; margin-top:15px; }
+</style>
 </head>
 <body>
-  <header>🏴‍☠️ MegaherzCampus Treasure Hunt</header>
+<h1>Willkommen im Megaherz Campus!</h1>
 
-  <div id="home" class="page active">
-    <h2>Welcome to MegaherzCampus!</h2>
-    <p>Choose an activity:</p>
-    <button onclick="showPage('documents')">📄 Download Documents</button>
-    <button onclick="showPage('game')">🏝️ Play Treasure Hunt</button>
+<div id="scoreboard">
+  <span id="goldCount">Gold: 0</span>
+  <span id="starCount">Sterne: 0</span>
+</div>
+
+<div id="pdfContainer">
+  <div class="pdfCard" onclick="window.open('docs/doc1.pdf')"><div class="pdfIcon">📄</div><span class="pdfTitle">Dokument 1</span></div>
+  <div class="pdfCard" onclick="window.open('docs/doc2.pdf')"><div class="pdfIcon">📄</div><span class="pdfTitle">Dokument 2</span></div>
+  <div class="pdfCard" onclick="window.open('docs/doc3.pdf')"><div class="pdfIcon">📄</div><span class="pdfTitle">Dokument 3</span></div>
+</div>
+
+<button id="startMap">Karten-Abenteuer starten</button>
+<button id="startMath">Mathe-Quest starten</button>
+
+<div id="mapGame">
+  <div id="mapContainer">
+    <div id="character"></div>
+    <div class="checkpoint" id="A" style="top:50px; left:50px;">A</div>
+    <div class="checkpoint" id="B" style="top:100px; left:200px;">B</div>
+    <div class="checkpoint" id="C" style="top:180px; left:350px;">C</div>
+    <div class="checkpoint" id="D" style="top:260px; left:250px;">D</div>
+    <div class="checkpoint" id="E" style="top:320px; left:150px;">E</div>
+    <div class="checkpoint" id="F" style="top:360px; left:300px;">F</div>
   </div>
+  <p id="questionText"></p>
+  <div id="mapOptions"></div>
+  <button id="backHome1">Zurück</button>
+</div>
 
-  <div id="documents" class="page">
-    <h2>📄 Downloadable Documents</h2>
-    <ul id="pdfList"></ul>
-    <button onclick="showPage('home')">⬅️ Back</button>
+<div id="mathGame">
+  <div id="mathContainer">
+    <h2 id="mathQuestion">Frage</h2>
+    <div id="mathOptions"></div>
+    <p id="mathScore">Punkte: 0</p>
+    <button id="backHome2">Zurück</button>
   </div>
+</div>
 
-  <div id="game" class="page">
-    <h2>🏝️ MegaherzCampus Treasure Hunt</h2>
-    <div id="goldDisplay">💰 Gold: 0</div>
-    <div id="game-area">
-      <div id="character"></div>
-      <div id="A" class="checkpoint">A</div>
-      <div id="B" class="checkpoint">B</div>
-      <div id="C" class="checkpoint">C</div>
-      <div id="D" class="checkpoint">D</div>
-      <div id="E" class="checkpoint">E</div>
-      <div id="F" class="checkpoint">F</div>
-    </div>
-    <button onclick="startGame()">Start Game</button>
-    <button onclick="showPage('home')">⬅️ Back</button>
-  </div>
+<script>
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
-  <div id="overlay"></div>
-  <div id="questionBox">
-    <h3 id="questionText">Question</h3>
-    <input type="text" id="answerInput" placeholder="Your answer" />
-    <br><br>
-    <button onclick="submitAnswer()">Submit</button>
-  </div>
+let totalGold=0, totalStars=0;
+const homeBtns={startMap:document.getElementById('startMap'),startMath:document.getElementById('startMath'),mapGame:document.getElementById('mapGame'),mathGame:document.getElementById('mathGame'),backHome1:document.getElementById('backHome1'),backHome2:document.getElementById('backHome2')};
+const pdfContainer=document.getElementById('pdfContainer');
+const goldCount=document.getElementById('goldCount');
+const starCount=document.getElementById('starCount');
 
-  <script>
-    // ===== PAGE NAVIGATION =====
-    function showPage(id){
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
+homeBtns.startMap.onclick=()=>showGame('map');
+homeBtns.startMath.onclick=()=>showGame('math');
+homeBtns.backHome1.onclick=homeBtns.backHome2.onclick=()=>showGame('home');
 
-    // ===== PDF DOWNLOAD =====
-    const pdfs = [
-      { name: "Sample Document 1", url: "docs/sample1.pdf?v=1" },
-      { name: "Sample Document 2", url: "docs/sample2.pdf?v=1" }
-    ];
+function showGame(mode){
+  document.body.style.backgroundImage=mode==='home'?"url('images/background.jpg')":'none';
+  homeBtns.mapGame.style.display=mode==='map'?'block':'none';
+  homeBtns.mathGame.style.display=mode==='math'?'block':'none';
+  homeBtns.startMap.style.display=homeBtns.startMath.style.display=mode==='home'?'inline-block':'none';
+  pdfContainer.style.display=mode==='home'?'flex':'none';
+  if(mode==='home'){
+    currentCheckpoint=0; character.style.left='0px'; character.style.top='0px';
+    questionText.textContent=''; mapOptions.innerHTML='';
+    document.querySelectorAll('.checkpoint').forEach(cp=>{cp.style.background='#aaa'; cp.dataset.answered='';});
+    score=0; questionCount=0; scoreEl.textContent='Punkte: 0'; questionEl.textContent='Frage'; optionsEl.innerHTML='';
+  }
+  if(mode==='math') startMathGame();
+}
 
-    function renderPDFs() {
-      const list = document.getElementById('pdfList');
-      list.innerHTML = '';
-      pdfs.forEach(p => {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.textContent = p.name;
-        a.href = p.url;
-        a.download = p.name;
-        li.appendChild(a);
-        list.appendChild(li);
-      });
-    }
-    renderPDFs();
+// MAP GAME
+const checkpoints=['A','B','C','D','E','F'];
+let currentCheckpoint=0;
+const character=document.getElementById('character');
+const questionText=document.getElementById('questionText');
+const mapOptions=document.getElementById('mapOptions');
+const mapQuestions={};
+checkpoints.forEach(cp=>{
+  const a=Math.floor(Math.random()*10)+1;
+  const b=Math.floor(Math.random()*10)+1;
+  mapQuestions[cp]={a,b,answer:a+b};
+});
+document.querySelectorAll('.checkpoint').forEach(cp=>{
+  cp.addEventListener('click',()=>{
+    if(cp.dataset.answered==='true') return;
+    if(checkpoints.indexOf(cp.id)===currentCheckpoint) showMapQuestion(cp);
+  });
+});
+function showMapQuestion(cp){
+  const q=mapQuestions[cp.id];
+  questionText.textContent=`Was ist ${q.a} + ${q.b}?`;
+  mapOptions.innerHTML='';
+  const input=document.createElement('input'); input.type='number';
+  const btn=document.createElement('button'); btn.textContent='Antworten';
+  btn.onclick=()=>{
+    if(Number(input.value)===q.answer){ cp.style.background='green'; cp.dataset.answered='true'; totalGold++; goldCount.textContent=`Gold: ${totalGold}`; }
+    else{ cp.style.background='red'; }
+    moveCharacter(cp); currentCheckpoint++; questionText.textContent=''; mapOptions.innerHTML='';
+  };
+  mapOptions.appendChild(input); mapOptions.appendChild(btn);
+}
+function moveCharacter(cp){
+  const rect=cp.getBoundingClientRect(), parentRect=cp.parentElement.getBoundingClientRect();
+  character.style.left=(rect.left-parentRect.left)+'px';
+  character.style.top=(rect.top-parentRect.top-character.offsetHeight)+'px';
+}
 
-    // ===== GAME LOGIC =====
-    let goldCount = 0;
-    const goldDisplay = document.getElementById('goldDisplay');
-    const character = document.getElementById('character');
-    const checkpoints = ['A','B','C','D','E','F'];
-    let currentIndex = 0;
-    let correctAnswer = '';
+// MATH QUEST
+let score=0, questionCount=0;
+const questionEl=document.getElementById('mathQuestion');
+const optionsEl=document.getElementById('mathOptions');
+const scoreEl=document.getElementById('mathScore');
 
-    function generateQuestion() {
-      const num1 = Math.floor(Math.random() * 10) + 1;
-      const num2 = Math.floor(Math.random() * 10) + 1;
-      const isAdd = Math.random() > 0.5;
-      const question = isAdd ? `${num1} + ${num2} = ?` : `${Math.max(num1,num2)} - ${Math.min(num1,num2)} = ?`;
-      correctAnswer = isAdd ? (num1+num2).toString() : (Math.max(num1,num2)-Math.min(num1,num2)).toString();
-      document.getElementById('questionText').textContent = question;
-      const input = document.getElementById('answerInput');
-      input.value = '';
-      input.style.backgroundColor = 'white';
-    }
+function startMathGame(){ score=0; questionCount=0; nextMathQuestion(); }
 
-    function showQuestion() { generateQuestion(); document.getElementById('overlay').style.display = 'block'; document.getElementById('questionBox').style.display = 'block'; }
-    function hideQuestion() { document.getElementById('overlay').style.display = 'none'; document.getElementById('questionBox').style.display = 'none'; }
-
-    function addGoldAnimation() {
-      const goldIcon = document.createElement('div');
-      goldIcon.textContent = '💰';
-      goldIcon.style.position = 'absolute';
-      goldIcon.style.top = '50%';
-      goldIcon.style.left = '50%';
-      goldIcon.style.transform = 'translate(-50%, -50%) scale(1)';
-      goldIcon.style.fontSize = '2rem';
-      goldIcon.style.opacity = '1';
-      goldIcon.style.transition = 'transform 0.8s ease-out, opacity 0.8s ease-out';
-      document.body.appendChild(goldIcon);
-
-      setTimeout(() => { goldIcon.style.transform = 'translate(-50%, -200%) scale(0.5)'; goldIcon.style.opacity = '0'; }, 100);
-      setTimeout(() => goldIcon.remove(), 900);
-    }
-
-    function submitAnswer() {
-      const input = document.getElementById('answerInput');
-      const answer = input.value.trim();
-      if (answer === correctAnswer) {
-        input.style.backgroundColor = '#b4f8b4';
-        goldCount++;
-        goldDisplay.textContent = `💰 Gold: ${goldCount}`;
-        addGoldAnimation();
-      } else { input.style.backgroundColor = '#ffb3b3'; }
-
-      setTimeout(() => { hideQuestion(); moveToCheckpoint(currentIndex + 1); }, 1000);
-    }
-
-    function startGame() {
-      goldCount = 0; currentIndex = 0;
-      goldDisplay.textContent = '💰 Gold: 0';
-      character.style.left = '0%';
-      character.style.top = '70%';
-      moveToCheckpoint(0);
-    }
-
-    function moveToCheckpoint(index){
-      if(index >= checkpoints.length){
-        setTimeout(()=>alert(`🏆 Game over! You collected ${goldCount} gold!`),500);
-        return;
-      }
-      currentIndex = index;
-      const cp = document.getElementById(checkpoints[index]);
-      character.style.left = cp.offsetLeft + 'px';
-      character.style.top = cp.offsetTop + 'px';
-      setTimeout(showQuestion, 1300);
-    }
-
-    // ===== PRELOAD IMAGES =====
-    const imagesToLoad = [
-      'images/background.jpg?v=1',
-      'images/treasure-map.png?v=1',
-      'images/character.png?v=1'
-    ];
-    imagesToLoad.forEach(src => { const img = new Image(); img.src = src; });
-
-    // ===== SERVICE WORKER =====
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('sw.js?v=1').then(reg=>{
-        console.log('Service Worker registered with cache-busting.');
-      });
-    }
-  </script>
+function nextMathQuestion(){
+  if(questionCount>=10){ questionEl.textContent=`🎉 Spiel vorbei! Punkte: ${score}/10`; optionsEl.innerHTML=''; return; }
+  const a=Math.floor(Math.random()*10)+1, b=Math.floor(Math.random()*10)+1, correct=a+b;
+  const wrong1=correct+(Math.random()<0.5?1:-1), wrong2=correct+(Math.random()<0.5?2:-2);
+  const answers=[correct,wrong1,wrong2].sort(()=>Math.random()-0.5);
+  questionEl.textContent=`Was ist ${a} + ${b}?`; optionsEl.innerHTML='';
+  answers.forEach(ans=>{
+    const div=document.createElement('div'); div.className='option'; div.textContent=ans;
+    div.onclick=()=>{ if(ans===correct){ div.style.background='green'; score++; totalStars++; starCount.textContent=`Sterne: ${totalStars}`; } else{ div.style.background='red'; } scoreEl.textContent=`Punkte: ${score}`; questionCount++; setTimeout(nextMathQuestion,500);}
+    optionsEl.appendChild(div);
+  });
+}
+</script>
 </body>
 </html>
